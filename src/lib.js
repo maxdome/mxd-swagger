@@ -3,9 +3,10 @@
 const fs = require('fs');
 const SwaggerParser = require('swagger-parser');
 
-module.exports = (app, express, version) => {
+module.exports = (app, express, fileformat, version) => {
+  fileformat = fileformat || 'js';
   version = version || 'v1';
-  const api = require(`${process.cwd()}/config/swagger/${version}.json`);
+  const api = require(`${process.cwd()}/config/swagger/${version}.${fileformat}`);
   SwaggerParser.validate(api, () => {
     SwaggerParser.bundle(api, (err, schema) => {
       let revision = '';
@@ -14,7 +15,10 @@ module.exports = (app, express, version) => {
       } catch (e) {}
       schema.info.version = require(`${process.cwd()}/package.json`).version + revision;
       app.get('/api-docs', (req, res) => {
-        res.send(schema)
+        res.redirect('/api-docs/' + version);
+      });
+      app.get('/api-docs/' + version, (req, res) => {
+        res.send(schema);
       });
     });
   });
@@ -22,7 +26,7 @@ module.exports = (app, express, version) => {
     res.redirect('/docs/' + version);
   });
   let html = fs.readFileSync(`${__dirname}/../node_modules/swagger-ui/dist/index.html`, 'utf8');
-  html = html.replace(/url = "(.*)"/, 'url = window.location.protocol + "//" + window.location.host + "/api-docs"');
+  html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs/${version}'`);
   app.get('/docs/' + version, (req, res) => {
     res.send(html);
   });
