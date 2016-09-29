@@ -1,7 +1,7 @@
 {
   "name": "mxd-swagger",
   "description": "Initialize swagger documentation under '/api-docs' the UI under '/docs'",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "homepage": "http://github.com/maxdome/swagger",
   "readmeFilename": "README.md",
   "main": "src/lib.js",

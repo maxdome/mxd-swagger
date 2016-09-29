@@ -5,9 +5,10 @@ const SwaggerParser = require('swagger-parser');
 
 module.exports = (app, express, opts) => {
   opts = opts || {};
-  opts.fileformat = opts.fileformat || 'js';
+  opts.fileformat = opts.fileformat || 'json';
   opts.version = opts.version || 'v1';
-  const api = require(`${process.cwd()}/config/swagger/${opts.version}.${opts.fileformat}`);
+  opts.filename = opts.filename || opts.version;
+  const api = require(`${process.cwd()}/config/swagger/${opts.filename}.${opts.fileformat}`);
   SwaggerParser.validate(api, () => {
     SwaggerParser.bundle(api, (err, schema) => {
       let revision = '';
