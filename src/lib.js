@@ -32,5 +32,5 @@ module.exports = (app, express, opts) => {
   app.get('/docs/' + opts.version, (req, res) => {
     res.send(html);
   });
-  app.use('/docs/' + opts.version, express.static(`${__dirname}/../node_modules/swagger-ui/dist`));
+  app.use('/docs', express.static(`${__dirname}/../node_modules/swagger-ui/dist`));
 };
