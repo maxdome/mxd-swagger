@@ -3,10 +3,11 @@
 const fs = require('fs');
 const SwaggerParser = require('swagger-parser');
 
-module.exports = (app, express, fileformat, version) => {
-  fileformat = fileformat || 'js';
-  version = version || 'v1';
-  const api = require(`${process.cwd()}/config/swagger/${version}.${fileformat}`);
+module.exports = (app, express, opts) => {
+  opts = opts || {};
+  opts.fileformat = opts.fileformat || 'js';
+  opts.version = opts.version || 'v1';
+  const api = require(`${process.cwd()}/config/swagger/${opts.version}.${opts.fileformat}`);
   SwaggerParser.validate(api, () => {
     SwaggerParser.bundle(api, (err, schema) => {
       let revision = '';
@@ -15,20 +16,20 @@ module.exports = (app, express, fileformat, version) => {
       } catch (e) {}
       schema.info.version = require(`${process.cwd()}/package.json`).version + revision;
       app.get('/api-docs', (req, res) => {
-        res.redirect('/api-docs/' + version);
+        res.redirect('/api-docs/' + opts.version);
       });
-      app.get('/api-docs/' + version, (req, res) => {
+      app.get('/api-docs/' + opts.version, (req, res) => {
         res.send(schema);
       });
     });
   });
   app.get('/docs', (req, res) => {
-    res.redirect('/docs/' + version);
+    res.redirect('/docs/' + opts.version);
   });
   let html = fs.readFileSync(`${__dirname}/../node_modules/swagger-ui/dist/index.html`, 'utf8');
-  html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs/${version}'`);
-  app.get('/docs/' + version, (req, res) => {
+  html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs/${opts.version}'`);
+  app.get('/docs/' + opts.version, (req, res) => {
     res.send(html);
   });
-  app.use('/docs/' + version, express.static(`${__dirname}/../node_modules/swagger-ui/dist`));
+  app.use('/docs/' + opts.version, express.static(`${__dirname}/../node_modules/swagger-ui/dist`));
 };
