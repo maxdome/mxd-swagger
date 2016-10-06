@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const SwaggerParser = require('swagger-parser');
 
 module.exports = (app, express, opts) => {
@@ -27,10 +28,11 @@ module.exports = (app, express, opts) => {
   app.get('/docs', (req, res) => {
     res.redirect('/docs/' + opts.version);
   });
-  let html = fs.readFileSync(`${__dirname}/../node_modules/swagger-ui/dist/index.html`, 'utf8');
+  const swaggerUIDirname = path.dirname(require.resolve('swagger-ui/package.json'));
+  let html = fs.readFileSync(`${swaggerUIDirname}/dist/index.html`, 'utf8');
   html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs/${opts.version}'`);
   app.get('/docs/' + opts.version, (req, res) => {
     res.send(html);
   });
-  app.use('/docs', express.static(`${__dirname}/../node_modules/swagger-ui/dist`));
+  app.use('/docs/' + opts.version, express.static(`${swaggerUIDirname}/dist`));
 };
