@@ -1,5 +1,7 @@
 # Example
 
+Its only needed if you don't use the `mxd-environment`.
+
 ```
 require('mxd-swagger')(app, express);
 ```
