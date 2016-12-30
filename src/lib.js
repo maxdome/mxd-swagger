@@ -4,13 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const SwaggerParser = require('swagger-parser');
 
-module.exports = (app, express, opts) => {
-  opts = opts || {};
-  opts.fileformat = opts.fileformat || 'json';
-  opts.version = opts.version || 'v1';
-  opts.filename = opts.filename || opts.version;
-  opts.filepath = opts.filepath || `swagger/${opts.filename}.${opts.fileformat}`;
-  const api = require(`${process.cwd()}/config/${opts.filepath}`);
+module.exports = (app, express) => {
+  const api = require(`${process.cwd()}/config/swagger.json`);
   SwaggerParser.validate(api, () => {
     SwaggerParser.bundle(api, (err, schema) => {
       let revision = '';
@@ -19,21 +14,15 @@ module.exports = (app, express, opts) => {
       } catch (e) {}
       schema.info.version = require(`${process.cwd()}/package.json`).version + revision;
       app.get('/api-docs', (req, res) => {
-        res.redirect('/api-docs/' + opts.version);
-      });
-      app.get('/api-docs/' + opts.version, (req, res) => {
         res.send(schema);
       });
     });
   });
-  app.get('/docs', (req, res) => {
-    res.redirect('/docs/' + opts.version);
-  });
   const swaggerUIDirname = path.dirname(require.resolve('swagger-ui/package.json'));
+  app.use('/docs', express.static(`${swaggerUIDirname}/dist`));
   let html = fs.readFileSync(`${swaggerUIDirname}/dist/index.html`, 'utf8');
-  html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs/${opts.version}'`);
-  app.get('/docs/' + opts.version, (req, res) => {
+  html = html.replace(/url = "(.*)"/, `url = window.location.protocol + '//' + window.location.host + '/api-docs'`);
+  app.get('/docs', (req, res) => {
     res.send(html);
   });
-  app.use('/docs', express.static(`${swaggerUIDirname}/dist`));
 };
