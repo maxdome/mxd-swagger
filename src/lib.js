@@ -9,7 +9,8 @@ module.exports = (app, express, opts) => {
   opts.fileformat = opts.fileformat || 'json';
   opts.version = opts.version || 'v1';
   opts.filename = opts.filename || opts.version;
-  const api = require(`${process.cwd()}/config/swagger/${opts.filename}.${opts.fileformat}`);
+  opts.filepath = opts.filepath || `swagger/${opts.filename}.${opts.fileformat}`;
+  const api = require(`${process.cwd()}/config/${opts.filepath}`);
   SwaggerParser.validate(api, () => {
     SwaggerParser.bundle(api, (err, schema) => {
       let revision = '';
