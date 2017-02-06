@@ -11,5 +11,5 @@ The Swagger definition file should be located under `config/swagger.json` or `co
 
 # Routes
 
-* `/api-docs`: The swagger API documentation as JSON OR YML
+* `/api-docs`: The swagger API documentation as JSON or YML
 * `/docs`: The swagger UI
