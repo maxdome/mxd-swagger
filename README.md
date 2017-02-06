@@ -6,10 +6,10 @@ Its only needed if you don't use the `mxd-environment`.
 require('mxd-swagger')(app, express);
 ```
 
-The Swagger definition file should be located under `config/swagger.json`.
+The Swagger definition file should be located under `config/swagger.json` or `config/swagger.yml`.
 
 
 # Routes
 
-* `/api-docs`: The swagger API documentation as JSON
+* `/api-docs`: The swagger API documentation as JSON OR YML
 * `/docs`: The swagger UI
